@@ -14,38 +14,54 @@
         <div class="mt-4">
             <h2>Horário de Trabalho</h2>
             <form id="formHorarioTrabalho">
-                <div class="form-group mt-2 col-1">
-                    <label for="entrada1">Entrada 1</label>
-                    <input type="text" class="form-control" id="entrada1" placeholder="HH:MM">
-					<small id="entrada1Help" class="form-text text-danger"></small>
-				</div>
-                <div class="form-group mt-2 col-1">
-                    <label for="saida1">Saída 1</label>
-                    <input type="text" class="form-control" id="saida1" placeholder="HH:MM">
-					<small id="saida1Help" class="form-text text-danger"></small>
-                </div>
-				<div class="form-group mt-2 col-1">
-                    <label for="entrada2">Entrada 2</label>
-                    <input type="text" class="form-control" id="entrada2" placeholder="HH:MM">
-					<small id="entrada2Help" class="form-text text-danger"></small>
-				</div>
-                <div class="form-group mt-2 col-1">
-                    <label for="saida2">Saída 2</label>
-                    <input type="text" class="form-control" id="saida2" placeholder="HH:MM">
-					<small id="saida2Help" class="form-text text-danger"></small>
-                </div>
-				<div class="form-group mt-2 col-1">
-                    <label for="entrada3">Entrada 3</label>
-                    <input type="text" class="form-control" id="entrada3" placeholder="HH:MM">
-					<small id="entrada3Help" class="form-text text-danger"></small>
-				</div>
-                <div class="form-group mt-2 col-1">
-                    <label for="saida3">Saída 3</label>
-                    <input type="text" class="form-control" id="saida3" placeholder="HH:MM">
-					<small id="saida1Help" class="form-text text-danger"></small>
-                </div>
-				
-                <button type="button" class="btn btn-primary mt-2" onclick="calcular()">Enviar</button>
+            	<div class="row">
+            		<div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Entrada
+	                    	<input type="text" class="form-control" id="horarioEntrada1" placeholder="HH:MM">
+							<small id="horarioEntrada1Help" class="form-text text-danger"></small>
+	                    </label>
+					</div>
+	                <div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Saída
+	                    	<input type="text" class="form-control" id="horarioSaida1" placeholder="HH:MM">
+							<small id="horarioSaida1Help" class="form-text text-danger"></small>
+	                    </label>
+	                </div>
+	            </div>
+	            <div class="row">
+					<div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Entrada
+	                    	<input type="text" class="form-control" id="horarioEntrada2" placeholder="HH:MM">
+							<small id="horarioEntrada2Help" class="form-text text-danger"></small>
+	                    </label>
+					</div>
+	                <div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Saída
+	                    	<input type="text" class="form-control" id="horarioSaida2" placeholder="HH:MM">
+							<small id="horarioSaida2Help" class="form-text text-danger"></small>
+	                    </label>
+	                </div>
+	            </div>
+	            <div class="row">    
+					<div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Entrada
+	                    	<input type="text" class="form-control" id="horarioEntrada3" placeholder="HH:MM">
+							<small id="horarioEntrada3Help" class="form-text text-danger"></small>
+	                    </label>
+					</div>
+	                <div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Saída
+	                    	<input type="text" class="form-control" id="horarioSaida3" placeholder="HH:MM">
+							<small id="horarioSaida3Help" class="form-text text-danger"></small>
+	                    </label>
+	                </div>
+            	</div>
                 <p id="resultadoHorarioTrabalho"></p>
             </form>
         </div>
@@ -54,34 +70,29 @@
         <div class="mt-4">
             <h2>Marcações Feitas</h2>
             <form id="formMarcacoesFeitas">
-                <div class="form-group mt-2 col-1">
-                    <label for="entrada1Marcacoes">Entrada 1</label>
-                    <input type="text" class="form-control" id="entrada1Marcacoes" placeholder="HH:MM">
-					<small id="entrada1Help" class="form-text text-danger"></small>
-                </div>
-                <div class="form-group mt-2 col-1">
-                    <label for="saida1Marcacoes">Saída 1</label>
-                    <input type="text" class="form-control" id="saida1Marcacoes" placeholder="HH:MM">
-					<small id="saida1Help" class="form-text text-danger"></small>
+            	<div class="row">
+	                <div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Entrada 
+	                    	<input type="text" class="form-control" id="marcacaoEntrada1" placeholder="HH:MM">
+							<small id="marcacaoEntrada1Help" class="form-text text-danger"></small>
+	                    </label>
+	                </div>
+	                <div class="form-group mt-2 col-1">
+	                    <label>
+	                    	Saída
+	                    	<input type="text" class="form-control" id="marcacaoSaida1" placeholder="HH:MM">
+							<small id="marcacaoSaida1Help" class="form-text text-danger"></small>
+	                    </label>
+	                </div>
                 </div>
 				<div id="camposExtras"></div>
 				<button type="button" class="btn btn-primary mt-2" id="adicionarMarcacao" onclick="adicionarCampo()">Adicionar Marcação</button>
-                <button type="button" class="btn btn-primary mt-2" onclick="calcularMarcacoes()">Enviar</button>
+                <button type="button" class="btn btn-primary mt-2" id="calcularMarcacoes" onclick="calcularMarcacoes()">Enviar</button>
                 <p id="resultadoMarcacoesFeitas"></p>
             </form>
         </div>
 
-        <!-- Tabela Cálculos de Atraso -->
-        <div class="mt-4">
-            <h2>Cálculos de Atraso</h2>
-            <p id="resultadoAtraso"></p>
-        </div>
-
-        <!-- Tabela Cálculos de Hora Extra -->
-        <div class="mt-4">
-            <h2>Cálculos de Hora Extra</h2>
-            <p id="resultadoHoraExtra"></p>
-        </div>
 		<!-- Botão de limpar todas as entradas -->
 		<div>
 			<button type="button" class="btn btn-primary mt-2">Limpar entradas</button>
