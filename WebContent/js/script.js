@@ -43,33 +43,28 @@ function validarFormato(input) {
 	}
 }
 
-/*
+
 function verificarCamposPreenchidos() {
-	// Verifica se há pelo menos um campo de horário de trabalho preenchido
-	const horariosTrabalhoPreenchidos = $('[id^="horario"]').filter((index, element) => {
-		const entrada = $(`#horarioEntrada${element.id.slice(-1)}`).val() || '';
-		const saida = $(`#horarioSaida${element.id.slice(-1)}`).val() || '';
-		return entrada.trim() !== '' && saida.trim() !== '';
-	}).length > 0;
+    // Verifica se há pelo menos um campo de horário de trabalho preenchido
+    const horariosTrabalhoPreenchidos = $('[id^="horario"]').filter((index, element) => {
+        const entrada = $(`#horarioEntrada${element.id.slice(-1)}`).val();
+        const saida = $(`#horarioSaida${element.id.slice(-1)}`).val();
+        return (entrada !== "" && entrada !== undefined) && (saida !== "" && saida !== undefined);
+    }).length > 0;
 
-	// Verifica se não há nenhum campo de marcação em branco
-	const marcacoesPreenchidas = $('[id^="marcacao"]').filter((index, element) => {
-		const entrada = $(`#marcacaoEntrada${element.id.slice(-1)}`).val() || '';
-		const saida = $(`#marcacaoSaida${element.id.slice(-1)}`).val() || '';
-		return entrada.trim() !== '' || saida.trim() !== '';
-	}).length === 0;
+    // Verifica se não há nenhum campo de marcação em branco
+    const marcacoesPreenchidas = $('[id^="marcacao"]').filter((index, element) => {
+        const entrada = $(`#marcacaoEntrada${element.id.slice(-1)}`).val();
+        const saida = $(`#marcacaoSaida${element.id.slice(-1)}`).val();
+        return entrada === "" || saida === "";
+    }).length === 0;
 
-	// Verifica se há algum campo com formato inválido
-	const camposValidos = $('.form-text').toArray().every((element) => {
-		return element.value.trim() === '';
-	});
-
-	// Desabilita o botão se alguma condição não for atendida
-	$('#calcularMarcacoes').prop('disabled', !(horariosTrabalhoPreenchidos && marcacoesPreenchidas && camposValidos));
+    // Desabilita o botão se alguma condição não for atendida
+    $('#calcularMarcacoes').prop('disabled', !(horariosTrabalhoPreenchidos && marcacoesPreenchidas));
 }
-*/
 
 $(document).ready(function () {
+	verificarCamposPreenchidos();
 	function adicionarCampo() {
 		const novoCampo = `
 			<div class="row">
@@ -112,5 +107,6 @@ $(document).ready(function () {
 	$('#calcularMarcacoes').on('click', calcularMarcacoes);
 	$('.form-control').on('blur', function () {
 		validarFormato(this);
+		verificarCamposPreenchidos();
 	});
 });

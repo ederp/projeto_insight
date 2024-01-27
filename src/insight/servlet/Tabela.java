@@ -50,7 +50,6 @@ public class Tabela extends HttpServlet {
 	    String resultadoHoraExtra = "";
 		// Recuperar os dados da requisição AJAX
 	    String requestBody = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
-	    System.out.println(requestBody);
 	    // Processar esses dados
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    DadosMarcacoes dados = objectMapper.readValue(requestBody, DadosMarcacoes.class);
@@ -77,10 +76,6 @@ public class Tabela extends HttpServlet {
         		&& listaHorariosTrabalho.containsAll(horariosOrdenados.stream().skip(1)
                         .limit(horariosOrdenados.size() - 2) 
                         .collect(Collectors.toList()));
-        
-        /*booleano auxiliar para verificar se existe dois horários de trabalho seguidos de 
-        uma marcação. Em caso positivo, estes dois horários devem constar como atraso*/
-        boolean ultimaMarcacao = false;
                 
 	    for (int i = 0; i < horariosOrdenados.size() - 1; i+=2) {
 	    	LocalTime atual = horariosOrdenados.get(i);
@@ -90,7 +85,7 @@ public class Tabela extends HttpServlet {
         			listaMarcacoes.contains(proximo) && i % 4 == 0) || 
     				(listaMarcacoes.contains(atual) &&
     						listaHorariosTrabalho.contains(proximo) && i % 4 != 0) || 
-    				(ultimaMarcacao && listaHorariosTrabalho.contains(atual) && 
+    				(!somenteHorasExtras && listaHorariosTrabalho.contains(atual) && 
     						listaHorariosTrabalho.contains(proximo));
             boolean condicaoHoraExtra = (listaMarcacoes.contains(atual) &&
         			listaHorariosTrabalho.contains(proximo) && i % 4 == 0) || 
@@ -98,18 +93,12 @@ public class Tabela extends HttpServlet {
     						listaMarcacoes.contains(proximo) && i % 4 != 0);
             
             if(!atual.equals(proximo)) {
-            	if(somenteHorasExtras) {
+            	if(somenteHorasExtras || condicaoHoraExtra) {
             		resultadoHoraExtra += retornarHoraExtra(atual, proximo);
             	}
             	else if(condicaoAtraso) {
             		resultadoAtraso += retornarAtraso(atual, proximo);
             	}
-            	else if(condicaoHoraExtra) {
-            		resultadoHoraExtra += retornarHoraExtra(atual, proximo);
-            	}
-            }
-            if (listaMarcacoes.contains(proximo)) {
-            	ultimaMarcacao = true;
             }
 		}
 
@@ -199,9 +188,6 @@ public class Tabela extends HttpServlet {
 	                }
 	            })
 	            .collect(Collectors.toList());
-
-	    // Se precisar, aqui você pode imprimir ou verificar os horários ordenados
-	    System.out.println("Horários Ordenados: " + todosHorariosOrdenados);
 
 	    return todosHorariosOrdenados;
 	}
