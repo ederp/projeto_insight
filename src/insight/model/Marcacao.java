@@ -1,25 +1,25 @@
 package insight.model;
 
-import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class Marcacao {
+public class Marcacao{
+	
 
 	private LocalTime entrada;
-	private LocalTime saida;
-	
-	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-	
+    private LocalTime saida;
+    
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+    
 	public Marcacao() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	public Marcacao(String entrada, String saida) {
+		
+	public Marcacao(LocalTime entrada, LocalTime saida) {
 		super();
-		this.entrada = this.parseLocalTime(entrada);
-		this.saida = this.parseLocalTime(saida);
+		this.entrada = entrada;
+		this.saida = saida;
 	}
 
 	public LocalTime getEntrada() {
@@ -46,13 +46,7 @@ public class Marcacao {
 		this.saida = this.parseLocalTime(saida);
 	}
 	
-	public Integer getIntervalo() {
-		Long intervalo = Duration.between(entrada, saida).toMinutes();
-		return Integer.valueOf(intervalo.intValue());
-	}
-
 	private LocalTime parseLocalTime(String timeString) {
         return (timeString != null && !timeString.isEmpty()) ? LocalTime.parse(timeString, dtf) : null;
     }
-	
 }

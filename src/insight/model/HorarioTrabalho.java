@@ -1,10 +1,10 @@
 package insight.model;
 
-import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class HorarioTrabalho {
+public class HorarioTrabalho{
+	
 	private LocalTime entrada;
     private LocalTime saida;
     
@@ -14,13 +14,13 @@ public class HorarioTrabalho {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	public HorarioTrabalho(String entrada, String saida) {
+		
+	public HorarioTrabalho(LocalTime entrada, LocalTime saida) {
 		super();
-		this.entrada = this.parseLocalTime(entrada);
-        this.saida = this.parseLocalTime(saida);
+		this.entrada = entrada;
+		this.saida = saida;
 	}
-	
+
 	public LocalTime getEntrada() {
 		return entrada;
 	}
@@ -43,11 +43,6 @@ public class HorarioTrabalho {
 	
 	public void setSaida(String saida) {
 		this.saida = this.parseLocalTime(saida);
-	}
-	
-	public Integer getIntervalo() {
-		Long intervalo = Duration.between(entrada, saida).toMinutes();
-		return Integer.valueOf(intervalo.intValue());
 	}
 	
 	private LocalTime parseLocalTime(String timeString) {
