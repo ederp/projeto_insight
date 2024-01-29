@@ -38,3 +38,8 @@ Linguagens e frameworks utilizados:
 
 Front-end/web: HTML, Bootstrap e JavaScript/JQuery
 Back-end: Java 13 e servidor Tomcat v10.0.
+
+Abaixo, um print da tela do sistema, onde contém também o endereço de acesso ao iniciar o servidor Tomcat:
+![Tela do sistema](https://github.com/ederp/projeto_insight/blob/main/Template%20da%20Tela.jpg)
+
+Uma observação importante: para facilitar as entradas de horários e marcações, o caracter ':' é preenchido automaticamente assim que os dois primeiros dígitos numéricos correspondentes às horas são inseridos.
