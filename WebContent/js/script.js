@@ -43,7 +43,6 @@ function validarFormato(input) {
 	}
 }
 
-
 function verificarCamposPreenchidos() {
     // Verifica se há pelo menos um campo de horário de trabalho preenchido
     const horariosTrabalhoPreenchidos = $('[id^="horario"]').filter((index, element) => {
@@ -62,6 +61,40 @@ function verificarCamposPreenchidos() {
     // Desabilita o botão se alguma condição não for atendida
     $('#calcularMarcacoes').prop('disabled', !(horariosTrabalhoPreenchidos && marcacoesPreenchidas));
 }
+
+//Função para formatar a entrada de hora adicionando ":" automaticamente
+function formatarHoraInput(input) {
+    let valorAtual = input.value.replace(':', ''); // Remove qualquer ':'
+    valorAtual = valorAtual.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+    // Limita a entrada para apenas números e até 4 caracteres
+    if (/^\d{0,4}$/.test(valorAtual)) {
+        if (valorAtual.length >= 2) {
+            input.value = valorAtual.substring(0, 2) + (valorAtual.length === 4 ? ':' : '') + valorAtual.substring(2);
+        } else {
+            input.value = valorAtual;
+        }
+    }
+}
+
+// Aplique a função aos campos de entrada de hora
+$(document).on('input', '.form-control', function() {
+    formatarHoraInput(this);
+});
+
+// Corrige o problema de 'backspace' removendo o ':' automaticamente
+$(document).on('keydown', '.form-control', function(e) {
+    if (e.key === 'Backspace') {
+        let valorAtual = this.value.replace(':', '');
+        if (valorAtual.length > 1) {
+            this.value = valorAtual.substring(0, valorAtual.length - 1);
+            formatarHoraInput(this);
+        } else {
+            this.value = '';
+        }
+        e.preventDefault();
+    }
+});
 
 $(document).ready(function () {
 	verificarCamposPreenchidos();

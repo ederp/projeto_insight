@@ -78,6 +78,10 @@ public class Tabela extends HttpServlet {
                         .collect(Collectors.toList()));
                 
 	    for (int i = 0; i < horariosOrdenados.size() - 1; i+=2) {
+	    	LocalTime anterior = null;
+	    	if (i >= 2) {
+	    		anterior = horariosOrdenados.get(i - 1);
+	    	}
 	    	LocalTime atual = horariosOrdenados.get(i);
             LocalTime proximo = horariosOrdenados.get(i + 1);
             
@@ -90,7 +94,11 @@ public class Tabela extends HttpServlet {
             boolean condicaoHoraExtra = (listaMarcacoes.contains(atual) &&
         			listaHorariosTrabalho.contains(proximo) && i % 4 == 0) || 
     				(listaHorariosTrabalho.contains(atual) &&
-    						listaMarcacoes.contains(proximo) && i % 4 != 0);
+    						listaMarcacoes.contains(proximo) && i % 4 != 0) ||
+					(i == horariosOrdenados.size() - 2 && 
+					listaHorariosTrabalho.contains(anterior) &&
+					listaMarcacoes.contains(atual) &&
+					listaMarcacoes.contains(proximo));
             
             if(!atual.equals(proximo)) {
             	if(somenteHorasExtras || condicaoHoraExtra) {
