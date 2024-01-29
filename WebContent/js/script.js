@@ -136,6 +136,17 @@ $(document).ready(function () {
 		contadorCampos = 2;
 	});
 	
+	// Botão de limpar somente as marcações
+	$('#limparMarcacoes').on('click', function () {
+		// Limpa os campos de marcação
+		$('[id^="marcacao"]').val('');
+		// Limpa o resultado exibido
+		$('#resultadoMarcacoesFeitas').html('');
+		// Remove os campos adicionais de marcação
+		$('#camposExtras').empty();
+		contadorCampos = 2;
+	});
+	
 	$('#adicionarMarcacao').on('click', adicionarCampo);
 	$('#calcularMarcacoes').on('click', calcularMarcacoes);
 	$('.form-control').on('blur', function () {
