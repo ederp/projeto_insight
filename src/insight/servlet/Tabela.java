@@ -115,7 +115,11 @@ public class Tabela extends HttpServlet {
             boolean condicaoAtraso = marcacaoPosHorarioEntrada || marcacaoAntesHorarioSaida ||
             		(dados.getMarcacoes().stream()
 							.noneMatch(m -> m.getEntrada().isAfter(atual) && 
-		            		m.getSaida().isBefore(proximo))); 
+		            		m.getSaida().isBefore(proximo))) || 
+            		(i >=2 && i < horariosOrdenados.size() - 2 && 
+            		listaHorariosTrabalho.contains(anterior) &&
+					listaMarcacoes.contains(atual) &&
+					listaMarcacoes.contains(proximo)); 
             
             boolean condicaoHoraExtra = marcacaoAntesHorarioEntrada || marcacaoPosHorarioSaida ||
             		(i == 0 && listaMarcacoes.contains(atual) &&
@@ -188,6 +192,15 @@ public class Tabela extends HttpServlet {
 	            return 3;
 	        }
 	    };
+	    
+	    boolean turnoMadrugada = dadosMarcacoes.getHorarios()
+	    		.get(0)
+	    		.getEntrada()
+	    		.isAfter(LocalTime.of(18, 59)) && 
+	    		dadosMarcacoes.getHorarios()
+	    		.get(0)
+	    		.getSaida()
+	    		.isAfter(LocalTime.MIDNIGHT);
 
 	    Map<Integer, List<LocalTime>> horariosAgrupados = dadosMarcacoes.getHorarios().stream()
 	            .flatMap(horarioTrabalho -> Stream.of(horarioTrabalho.getEntrada(), horarioTrabalho.getSaida()))
@@ -211,7 +224,7 @@ public class Tabela extends HttpServlet {
 
 	                if (periodo1 != periodo2) {
 	                	//Significa que é o turno da madrugada
-	                	if(periodo2 < periodo1 && periodo2 == 0 && periodo1 == 3) {
+	                	if(turnoMadrugada && periodo2 < periodo1 && (periodo2 == 0 || periodo2 == 1) && periodo1 == 3) {
 	                		return -1;
 	                	} else {
 	                		return Integer.compare(periodo1, periodo2);
