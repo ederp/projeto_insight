@@ -62,7 +62,7 @@ public class Tabela extends HttpServlet {
         	listaMarcacoes.add(marcacao.getEntrada());
 			listaMarcacoes.add(marcacao.getSaida());
         });
-        
+               
         dados.getHorarios().stream().forEach(horarioTrabalho -> {
         	listaHorariosTrabalho.add(horarioTrabalho.getEntrada());
 			listaHorariosTrabalho.add(horarioTrabalho.getSaida());
@@ -71,11 +71,18 @@ public class Tabela extends HttpServlet {
         //para os casos em que uma marcação seja superior a todos os horários de trabalho
         LocalTime primeiro = horariosOrdenados.stream().findFirst().get();
         LocalTime ultimo = horariosOrdenados.stream().reduce((a, b) -> b).get();
-        boolean somenteHorasExtras = listaMarcacoes.contains(primeiro) 
-        		&& listaMarcacoes.contains(ultimo) 
-        		&& listaHorariosTrabalho.containsAll(horariosOrdenados.stream().skip(1)
+        boolean somenteHorasExtras = listaMarcacoes.contains(primeiro) && 
+        		listaMarcacoes.contains(ultimo) && 
+        		listaHorariosTrabalho.containsAll(horariosOrdenados.stream().skip(1)
                         .limit(horariosOrdenados.size() - 2) 
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList())) && 
+        		 ! (listaMarcacoes.containsAll(horariosOrdenados.stream().skip(1)
+                        .limit(horariosOrdenados.size() - 2) 
+                        .collect(Collectors.toList())));
+        boolean condicoesEspeciaisAtraso = (listaHorariosTrabalho.contains(primeiro) &&
+        		listaHorariosTrabalho.contains(ultimo) &&
+        		listaMarcacoes.contains(horariosOrdenados.get(horariosOrdenados.size() / 2)) &&
+        		listaMarcacoes.contains(horariosOrdenados.get((horariosOrdenados.size() / 2) + 1)));
                 
 	    for (int i = 0; i < horariosOrdenados.size() - 1; i+=2) {
 	    	LocalTime anterior = null;
@@ -84,19 +91,37 @@ public class Tabela extends HttpServlet {
 	    	}
 	    	LocalTime atual = horariosOrdenados.get(i);
             LocalTime proximo = horariosOrdenados.get(i + 1);
+
+            boolean marcacaoAntesHorarioEntrada = dados.getMarcacoes().stream()
+            		.anyMatch(m -> m.getEntrada().equals(atual)) && 
+            		dados.getHorarios().stream()
+            		.anyMatch(ht -> ht.getEntrada().equals(proximo));
             
-            boolean condicaoAtraso = (listaHorariosTrabalho.contains(atual) &&
-        			listaMarcacoes.contains(proximo) && i % 4 == 0) || 
-    				(listaMarcacoes.contains(atual) &&
-    						listaHorariosTrabalho.contains(proximo) && i % 4 != 0) || 
-    				(!somenteHorasExtras && listaHorariosTrabalho.contains(atual) && 
-    						listaHorariosTrabalho.contains(proximo));
-            boolean condicaoHoraExtra = (listaMarcacoes.contains(atual) &&
-        			listaHorariosTrabalho.contains(proximo) && i % 4 == 0) || 
-    				(listaHorariosTrabalho.contains(atual) &&
-    						listaMarcacoes.contains(proximo) && i % 4 != 0) ||
-					(i == horariosOrdenados.size() - 2 && 
-					listaHorariosTrabalho.contains(anterior) &&
+            boolean marcacaoPosHorarioEntrada = dados.getHorarios().stream()
+            		.anyMatch(ht -> ht.getEntrada().equals(atual)) && 
+            		dados.getMarcacoes().stream()
+            		.anyMatch(m -> m.getEntrada().equals(proximo));
+            
+            boolean marcacaoAntesHorarioSaida = dados.getMarcacoes().stream()
+            		.anyMatch(m -> m.getSaida().equals(atual)) && 
+            		dados.getHorarios().stream()
+            		.anyMatch(ht -> ht.getSaida().equals(proximo));
+            
+            boolean marcacaoPosHorarioSaida = dados.getHorarios().stream()
+            		.anyMatch(ht -> ht.getSaida().equals(atual)) && 
+            		dados.getMarcacoes().stream()
+            		.anyMatch(m -> m.getSaida().equals(proximo));
+
+            boolean condicaoAtraso = marcacaoPosHorarioEntrada || marcacaoAntesHorarioSaida ||
+            		(dados.getMarcacoes().stream()
+							.noneMatch(m -> m.getEntrada().isAfter(atual) && 
+		            		m.getSaida().isBefore(proximo))); 
+            
+            boolean condicaoHoraExtra = marcacaoAntesHorarioEntrada || marcacaoPosHorarioSaida ||
+            		(i == 0 && listaMarcacoes.contains(atual) &&
+					listaMarcacoes.contains(proximo)) || 
+            		(i == horariosOrdenados.size() - 2 && 
+					listaMarcacoes.contains(anterior) &&
 					listaMarcacoes.contains(atual) &&
 					listaMarcacoes.contains(proximo));
             
@@ -104,7 +129,7 @@ public class Tabela extends HttpServlet {
             	if(somenteHorasExtras || condicaoHoraExtra) {
             		resultadoHoraExtra += retornarHoraExtra(atual, proximo);
             	}
-            	else if(condicaoAtraso) {
+            	else if(condicaoAtraso || condicoesEspeciaisAtraso) {
             		resultadoAtraso += retornarAtraso(atual, proximo);
             	}
             }
@@ -197,6 +222,7 @@ public class Tabela extends HttpServlet {
 	            })
 	            .collect(Collectors.toList());
 
+	    System.out.println("Ordenação de horários: "+todosHorariosOrdenados.toString());
 	    return todosHorariosOrdenados;
 	}
 }
