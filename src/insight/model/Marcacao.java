@@ -1,5 +1,6 @@
 package insight.model;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -49,4 +50,15 @@ public class Marcacao{
 	private LocalTime parseLocalTime(String timeString) {
         return (timeString != null && !timeString.isEmpty()) ? LocalTime.parse(timeString, dtf) : null;
     }
+	
+	public Integer getIntervalo() {
+		if (entrada.isAfter(LocalTime.of(18, 59)) && 
+				entrada.isBefore(LocalTime.MAX) && 
+				saida.isBefore(LocalTime.MIDNIGHT)) {
+			return Long.valueOf(Duration.between(entrada, LocalTime.MAX).toMinutes()).intValue() +
+					Long.valueOf(Duration.between(LocalTime.MIDNIGHT, saida).toMinutes()).intValue();
+		}
+		
+		return Long.valueOf(Duration.between(entrada, saida).toMinutes()).intValue();
+	}
 }

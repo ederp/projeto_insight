@@ -69,71 +69,72 @@ public class Tabela extends HttpServlet {
         });
         
         //para os casos em que uma marcação seja superior a todos os horários de trabalho
-        LocalTime primeiro = horariosOrdenados.stream().findFirst().get();
-        LocalTime ultimo = horariosOrdenados.stream().reduce((a, b) -> b).get();
-        boolean somenteHorasExtras = listaMarcacoes.contains(primeiro) && 
-        		listaMarcacoes.contains(ultimo) && 
-        		listaHorariosTrabalho.containsAll(horariosOrdenados.stream().skip(1)
-                        .limit(horariosOrdenados.size() - 2) 
-                        .collect(Collectors.toList())) && 
-        		 ! (listaMarcacoes.containsAll(horariosOrdenados.stream().skip(1)
-                        .limit(horariosOrdenados.size() - 2) 
-                        .collect(Collectors.toList())));
-        boolean condicoesEspeciaisAtraso = (listaHorariosTrabalho.contains(primeiro) &&
-        		listaHorariosTrabalho.contains(ultimo) &&
-        		listaMarcacoes.contains(horariosOrdenados.get(horariosOrdenados.size() / 2)) &&
-        		listaMarcacoes.contains(horariosOrdenados.get((horariosOrdenados.size() / 2) + 1)));
-                
+        boolean marcacaoMaiorQueHorariosDeTrabalho = dados.getMarcacoes().size() == 1 &&
+        		dados.getHorarios().size() > 1 && 
+        		dados.getIntervaloMarcacoes() >= dados.getIntervaloHorariosTrabalho();    
+        LocalTime primeiraMarcacao = dados.getMarcacoes().get(0).getEntrada();
+        LocalTime ultimaMarcacao = dados.getMarcacoes().get(0).getSaida();
+        
 	    for (int i = 0; i < horariosOrdenados.size() - 1; i+=2) {
-	    	LocalTime anterior = null;
-	    	if (i >= 2) {
-	    		anterior = horariosOrdenados.get(i - 1);
-	    	}
+
 	    	LocalTime atual = horariosOrdenados.get(i);
             LocalTime proximo = horariosOrdenados.get(i + 1);
+            
+            boolean marcacaoEntreHorarioDeSaidaEEntrada = dados.getHorarios().stream()
+            		.anyMatch(ht -> ht.getSaida().equals(atual) && ht.getEntrada().equals(proximo)) && 
+            		dados.getMarcacoes().stream()
+            		.anyMatch(m -> m.getEntrada().equals(atual) && m.getSaida().equals(proximo));
 
-            boolean marcacaoAntesHorarioEntrada = dados.getMarcacoes().stream()
+            boolean marcacaoAntesHorarioEntrada = (dados.getMarcacoes().stream()
             		.anyMatch(m -> m.getEntrada().equals(atual)) && 
             		dados.getHorarios().stream()
-            		.anyMatch(ht -> ht.getEntrada().equals(proximo));
+            		.anyMatch(ht -> ht.getEntrada().equals(proximo))) || 
+            		(i == 0 && listaMarcacoes.contains(atual) &&
+        					listaMarcacoes.contains(proximo));
             
             boolean marcacaoPosHorarioEntrada = dados.getHorarios().stream()
             		.anyMatch(ht -> ht.getEntrada().equals(atual)) && 
             		dados.getMarcacoes().stream()
-            		.anyMatch(m -> m.getEntrada().equals(proximo));
+            		.anyMatch(m -> m.getEntrada().equals(proximo)) && 
+            		! marcacaoEntreHorarioDeSaidaEEntrada || 
+            		(i == 0 && listaHorariosTrabalho.contains(atual) &&
+        					listaHorariosTrabalho.contains(proximo));
             
             boolean marcacaoAntesHorarioSaida = dados.getMarcacoes().stream()
             		.anyMatch(m -> m.getSaida().equals(atual)) && 
             		dados.getHorarios().stream()
-            		.anyMatch(ht -> ht.getSaida().equals(proximo));
+            		.anyMatch(ht -> ht.getSaida().equals(proximo)) &&
+            		! marcacaoEntreHorarioDeSaidaEEntrada;
             
-            boolean marcacaoPosHorarioSaida = dados.getHorarios().stream()
+            boolean marcacaoPosHorarioSaida = (dados.getHorarios().stream()
             		.anyMatch(ht -> ht.getSaida().equals(atual)) && 
             		dados.getMarcacoes().stream()
-            		.anyMatch(m -> m.getSaida().equals(proximo));
-
-            boolean condicaoAtraso = marcacaoPosHorarioEntrada || marcacaoAntesHorarioSaida ||
-            		(dados.getMarcacoes().stream()
-							.noneMatch(m -> m.getEntrada().isAfter(atual) && 
-		            		m.getSaida().isBefore(proximo))) || 
-            		(i >=2 && i < horariosOrdenados.size() - 2 && 
-            		listaHorariosTrabalho.contains(anterior) &&
-					listaMarcacoes.contains(atual) &&
-					listaMarcacoes.contains(proximo)); 
+            		.anyMatch(m -> m.getSaida().equals(proximo))) || 
+            		(i == horariosOrdenados.size() - 2 &&
+        					listaMarcacoes.contains(atual) &&
+        					listaMarcacoes.contains(proximo));
             
-            boolean condicaoHoraExtra = marcacaoAntesHorarioEntrada || marcacaoPosHorarioSaida ||
-            		(i == 0 && listaMarcacoes.contains(atual) &&
-					listaMarcacoes.contains(proximo)) || 
-            		(i == horariosOrdenados.size() - 2 && 
-					listaMarcacoes.contains(anterior) &&
-					listaMarcacoes.contains(atual) &&
-					listaMarcacoes.contains(proximo));
+            boolean horariosTrabalhoEntreMarcacoes = marcacaoMaiorQueHorariosDeTrabalho &&
+            		listaHorariosTrabalho.contains(atual) &&
+            		atual.isAfter(primeiraMarcacao) &&
+            		listaHorariosTrabalho.contains(proximo) &&
+            		proximo.isBefore(ultimaMarcacao);
+            
+            System.out.println("Horario de trabalho atual: "+ atual);
+            System.out.println("Próximo horário de trabalho: "+ proximo);
+            System.out.println("Primeira marcação: "+ primeiraMarcacao);
+            System.out.println("Ultima marcação: "+ ultimaMarcacao);
+            
+            
+            boolean condicaoHoraExtra = (marcacaoAntesHorarioEntrada || marcacaoPosHorarioSaida ||
+            		horariosTrabalhoEntreMarcacoes) && 
+            		!(marcacaoPosHorarioEntrada || marcacaoAntesHorarioSaida);
             
             if(!atual.equals(proximo)) {
-            	if(somenteHorasExtras || condicaoHoraExtra) {
+            	if(condicaoHoraExtra) {
             		resultadoHoraExtra += retornarHoraExtra(atual, proximo);
             	}
-            	else if(condicaoAtraso || condicoesEspeciaisAtraso) {
+            	else {
             		resultadoAtraso += retornarAtraso(atual, proximo);
             	}
             }
