@@ -116,15 +116,9 @@ public class Tabela extends HttpServlet {
             
             boolean horariosTrabalhoEntreMarcacoes = marcacaoMaiorQueHorariosDeTrabalho &&
             		listaHorariosTrabalho.contains(atual) &&
-            		atual.isAfter(primeiraMarcacao) &&
             		listaHorariosTrabalho.contains(proximo) &&
-            		proximo.isBefore(ultimaMarcacao);
-            
-            System.out.println("Horario de trabalho atual: "+ atual);
-            System.out.println("Próximo horário de trabalho: "+ proximo);
-            System.out.println("Primeira marcação: "+ primeiraMarcacao);
-            System.out.println("Ultima marcação: "+ ultimaMarcacao);
-            
+            		horariosOrdenados.indexOf(atual) > horariosOrdenados.indexOf(primeiraMarcacao) &&
+            		horariosOrdenados.indexOf(proximo) < horariosOrdenados.indexOf(ultimaMarcacao);
             
             boolean condicaoHoraExtra = (marcacaoAntesHorarioEntrada || marcacaoPosHorarioSaida ||
             		horariosTrabalhoEntreMarcacoes) && 
@@ -236,7 +230,6 @@ public class Tabela extends HttpServlet {
 	            })
 	            .collect(Collectors.toList());
 
-	    System.out.println("Ordenação de horários: "+todosHorariosOrdenados.toString());
 	    return todosHorariosOrdenados;
 	}
 }
